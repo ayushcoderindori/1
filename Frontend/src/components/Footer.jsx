@@ -193,26 +193,39 @@ export default function Footer() {
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: { xs: "center", sm: "flex-start" },
-            gap: 2
+            alignItems: "center",
+            gap: 2,
+            pt: 2
           }}
         >
           <Typography
             variant="body2"
             color="text.secondary"
-            textAlign={{ xs: "center", sm: "left" }}
+            textAlign="center"
           >
             © {new Date().getFullYear()} BarterSkills. All rights reserved.
           </Typography>
 
-          <Stack direction="row" spacing={1}>
+          <Stack 
+            direction="row" 
+            spacing={1}
+            sx={{
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 1
+            }}
+          >
             <Chip
               label="Made with ❤️"
               size="small"
               variant="outlined"
               sx={{
                 borderColor: "rgba(99, 102, 241, 0.3)",
-                color: "primary.main"
+                color: "primary.main",
+                "&:hover": {
+                  borderColor: "primary.main",
+                  backgroundColor: "rgba(99, 102, 241, 0.1)"
+                }
               }}
             />
             <Chip
@@ -221,7 +234,11 @@ export default function Footer() {
               variant="outlined"
               sx={{
                 borderColor: "rgba(99, 102, 241, 0.3)",
-                color: "primary.main"
+                color: "primary.main",
+                "&:hover": {
+                  borderColor: "primary.main",
+                  backgroundColor: "rgba(99, 102, 241, 0.1)"
+                }
               }}
             />
           </Stack>
