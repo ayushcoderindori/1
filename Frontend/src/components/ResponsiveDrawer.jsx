@@ -17,6 +17,10 @@ import {
   Menu,
   MenuItem,
   Container,
+  Chip,
+  Badge,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -32,15 +36,20 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   Star as StarIcon,
+  Notifications as NotificationsIcon,
+  Settings as SettingsIcon,
+  VideoLibrary as VideoLibraryIcon,
 } from "@mui/icons-material";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { useThemeMode } from "../context/ThemeContext.jsx";
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 export default function ResponsiveDrawer({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useContext(AuthContext);
   const { mode, toggleMode } = useThemeMode();
 
@@ -65,11 +74,23 @@ export default function ResponsiveDrawer({ children }) {
     navigate("/login");
   };
 
+  const isActive = (path) => location.pathname === path;
+
+  const menuItems = [
+    { path: "/", icon: <HomeIcon />, text: "Home", badge: null },
+    { path: "/dashboard", icon: <DashboardIcon />, text: "Dashboard", badge: null },
+    { path: "/upload", icon: <UploadIcon />, text: "Upload Video", badge: null },
+    { path: "/videos", icon: <VideoLibraryIcon />, text: "My Videos", badge: null },
+    { path: "/messages", icon: <ChatIcon />, text: "Global Chat", badge: "New" },
+    { path: "/conversations", icon: <MessageIcon />, text: "Direct Messages", badge: null },
+  ];
+
   return (
     <Box sx={{ display: "flex" }}>
       {/* APP BAR */}
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           zIndex: (t) => t.zIndex.drawer + 1,
           transition: (t) =>
@@ -79,7 +100,10 @@ export default function ResponsiveDrawer({ children }) {
             }),
           width: `calc(100% - ${open ? drawerWidth : 0}px)`,
           ml: open ? `${drawerWidth}px` : 0,
-          backgroundColor: "primary.main",
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
+          color: "text.primary",
         }}
       >
         <Toolbar
@@ -87,101 +111,260 @@ export default function ResponsiveDrawer({ children }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            px: { xs: 1, sm: 2 },
+            px: { xs: 2, sm: 3 },
+            minHeight: 70,
           }}
         >
           {/* Left: Drawer Toggle + Logo */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton color="inherit" onClick={toggleDrawer} edge="start">
-              {open ? <ChevronLeftIcon /> : <MenuIcon />}
-            </IconButton>
-            <Typography
-              variant="h6"
-              component={RouterLink}
-              to="/"
-              sx={{
-                color: "inherit",
-                textDecoration: "none",
-                fontWeight: 600,
-              }}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <IconButton 
+                onClick={toggleDrawer} 
+                edge="start"
+                sx={{
+                  backgroundColor: "rgba(99, 102, 241, 0.1)",
+                  color: "primary.main",
+                  "&:hover": {
+                    backgroundColor: "rgba(99, 102, 241, 0.2)"
+                  }
+                }}
+              >
+                {open ? <ChevronLeftIcon /> : <MenuIcon />}
+              </IconButton>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              BarterSkills
-            </Typography>
+              <Typography
+                variant="h5"
+                component={RouterLink}
+                to="/"
+                sx={{
+                  color: "inherit",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                BarterSkills
+              </Typography>
+            </motion.div>
           </Box>
 
           {/* Center: Search Bar */}
-          <Box
-            component="form"
-            onSubmit={onSearchSubmit}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "rgba(255,255,255,0.2)",
-              borderRadius: 2,
-              px: 1,
-              mx: "auto",
-              width: {
-                xs: open ? "60%" : "50%",
-                sm: open ? "45%" : "35%",
-                md: open ? "40%" : "30%",
-              },
-              transition: (t) =>
-                t.transitions.create("width", {
-                  easing: t.transitions.easing.sharp,
-                  duration: t.transitions.duration.shorter,
-                }),
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <InputBase
-              placeholder="Search…"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              sx={{ flex: 1, color: "inherit", pl: 1 }}
-            />
-            <IconButton type="submit" color="inherit" sx={{ p: 1 }}>
-              <SearchIcon />
-            </IconButton>
-          </Box>
+            <Box
+              component="form"
+              onSubmit={onSearchSubmit}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                borderRadius: 3,
+                px: 2,
+                py: 1,
+                mx: "auto",
+                width: {
+                  xs: open ? "60%" : "50%",
+                  sm: open ? "45%" : "35%",
+                  md: open ? "40%" : "30%",
+                },
+                transition: (t) =>
+                  t.transitions.create("width", {
+                    easing: t.transitions.easing.sharp,
+                    duration: t.transitions.duration.shorter,
+                  }),
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                "&:hover": {
+                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)"
+                }
+              }}
+            >
+              <InputBase
+                placeholder="Search videos, creators..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                sx={{ 
+                  flex: 1, 
+                  color: "text.primary",
+                  "& .MuiInputBase-input::placeholder": {
+                    color: "text.secondary",
+                    opacity: 0.7
+                  }
+                }}
+              />
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <IconButton 
+                  type="submit" 
+                  sx={{ 
+                    color: "primary.main",
+                    backgroundColor: "rgba(99, 102, 241, 0.1)",
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.2)"
+                    }
+                  }}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </motion.div>
+            </Box>
+          </motion.div>
 
           {/* Right: Actions */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton color="inherit" onClick={toggleMode}>
-              {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
-            <IconButton
-              color="inherit"
-              component={RouterLink}
-              to="/"
-              title="Home"
-            >
-              <HomeIcon />
-            </IconButton>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+                <IconButton 
+                  onClick={toggleMode}
+                  sx={{
+                    backgroundColor: "rgba(99, 102, 241, 0.1)",
+                    color: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.2)"
+                    }
+                  }}
+                >
+                  {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
+                </IconButton>
+              </Tooltip>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Tooltip title="Notifications">
+                <IconButton
+                  sx={{
+                    backgroundColor: "rgba(99, 102, 241, 0.1)",
+                    color: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.2)"
+                    }
+                  }}
+                >
+                  <Badge badgeContent={3} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </motion.div>
+
             {user && (
               <>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Tooltip title="Premium">
+                    <Chip
+                      label="Premium"
+                      size="small"
+                      sx={{
+                        backgroundColor: "rgba(245, 158, 11, 0.9)",
+                        color: "white",
+                        fontWeight: 600,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => navigate("/premium")}
+                    />
+                  </Tooltip>
+                </motion.div>
+
                 <Typography
                   variant="body2"
-                  sx={{ color: "inherit", fontWeight: 500 }}
+                  sx={{ 
+                    color: "text.primary", 
+                    fontWeight: 600,
+                    mx: 1
+                  }}
                 >
                   {user.username}
                 </Typography>
-                <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
-                  <Avatar src={user.avatar} sx={{ width: 32, height: 32 }} />
-                </IconButton>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Tooltip title="Profile menu">
+                    <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
+                      <Avatar 
+                        src={user.avatar} 
+                        sx={{ 
+                          width: 40, 
+                          height: 40,
+                          border: "2px solid rgba(99, 102, 241, 0.2)",
+                          cursor: "pointer"
+                        }} 
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </motion.div>
+
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleAvatarClose}
+                  TransitionComponent={Fade}
+                  PaperProps={{
+                    elevation: 8,
+                    sx: {
+                      borderRadius: 2,
+                      mt: 1,
+                      minWidth: 200,
+                      background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)"
+                    }
+                  }}
                 >
                   <MenuItem
                     component={RouterLink}
                     to={`/profile/${user.username}`}
                     onClick={handleAvatarClose}
+                    sx={{
+                      borderRadius: 1,
+                      mx: 1,
+                      my: 0.5,
+                      "&:hover": {
+                        backgroundColor: "rgba(99, 102, 241, 0.1)"
+                      }
+                    }}
                   >
-                    <PersonIcon sx={{ mr: 1 }} />
+                    <PersonIcon sx={{ mr: 2, color: "primary.main" }} />
                     My Profile
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
-                    <LogoutIcon sx={{ mr: 1 }} />
+                  <MenuItem
+                    component={RouterLink}
+                    to="/settings"
+                    onClick={handleAvatarClose}
+                    sx={{
+                      borderRadius: 1,
+                      mx: 1,
+                      my: 0.5,
+                      "&:hover": {
+                        backgroundColor: "rgba(99, 102, 241, 0.1)"
+                      }
+                    }}
+                  >
+                    <SettingsIcon sx={{ mr: 2, color: "primary.main" }} />
+                    Settings
+                  </MenuItem>
+                  <Divider sx={{ my: 1 }} />
+                  <MenuItem 
+                    onClick={handleLogout}
+                    sx={{
+                      borderRadius: 1,
+                      mx: 1,
+                      my: 0.5,
+                      color: "error.main",
+                      "&:hover": {
+                        backgroundColor: "rgba(244, 67, 54, 0.1)"
+                      }
+                    }}
+                  >
+                    <LogoutIcon sx={{ mr: 2 }} />
                     Logout
                   </MenuItem>
                 </Menu>
@@ -201,43 +384,159 @@ export default function ResponsiveDrawer({ children }) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%)",
+            backdropFilter: "blur(10px)",
+            borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: "4px 0 20px rgba(0, 0, 0, 0.1)"
           },
         }}
       >
-        <Toolbar />
-        <Divider />
-        <List>
-          {[
-            ["/premium", <StarIcon />, "Go Premium"],
-            ["/", <HomeIcon />, "Home"],
-            ["/dashboard", <DashboardIcon />, "Dashboard"],
-            ["/upload", <UploadIcon />, "Upload"],
-            ["/messages", <ChatIcon />, "Global Chat"],
-            ["/conversations", <MessageIcon />, "Direct Messages"],
-          ].map(([to, Icon, text]) => (
-            <ListItemButton key={text} component={RouterLink} to={to}>
-              <ListItemIcon>{Icon}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          ))}
-          <Divider sx={{ my: 1 }} />
-          {user && (
-            <>
+        <Toolbar sx={{ minHeight: 70 }} />
+        <Box sx={{ p: 2 }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700,
+                mb: 2,
+                background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}
+            >
+              Navigation
+            </Typography>
+          </motion.div>
+        </Box>
+        <Divider sx={{ mx: 2 }} />
+        <List sx={{ px: 2, py: 1 }}>
+          {menuItems.map((item, index) => (
+            <motion.div
+              key={item.text}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
               <ListItemButton
                 component={RouterLink}
-                to={`/profile/${user.username}`}
+                to={item.path}
+                selected={isActive(item.path)}
+                sx={{
+                  borderRadius: 2,
+                  mb: 1,
+                  backgroundColor: isActive(item.path) 
+                    ? "rgba(99, 102, 241, 0.1)" 
+                    : "transparent",
+                  color: isActive(item.path) ? "primary.main" : "text.primary",
+                  "&:hover": {
+                    backgroundColor: isActive(item.path)
+                      ? "rgba(99, 102, 241, 0.15)"
+                      : "rgba(99, 102, 241, 0.05)"
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(99, 102, 241, 0.1)",
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.15)"
+                    }
+                  }
+                }}
               >
-                <ListItemIcon>
-                  <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />
+                <ListItemIcon sx={{ 
+                  color: isActive(item.path) ? "primary.main" : "text.secondary",
+                  minWidth: 40
+                }}>
+                  {item.icon}
                 </ListItemIcon>
-                <ListItemText primary="My Profile" />
+                <ListItemText 
+                  primary={item.text} 
+                  sx={{ 
+                    fontWeight: isActive(item.path) ? 600 : 500
+                  }}
+                />
+                {item.badge && (
+                  <Chip
+                    label={item.badge}
+                    size="small"
+                    color="error"
+                    sx={{ 
+                      height: 20, 
+                      fontSize: "0.7rem",
+                      fontWeight: 600
+                    }}
+                  />
+                )}
               </ListItemButton>
-              <ListItemButton onClick={handleLogout}>
-                <ListItemIcon>
-                  <LogoutIcon />
-                </ListItemIcon>
-                <ListItemText primary="Logout" />
-              </ListItemButton>
+            </motion.div>
+          ))}
+          
+          <Divider sx={{ my: 2 }} />
+          
+          {user && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <ListItemButton
+                  component={RouterLink}
+                  to={`/profile/${user.username}`}
+                  sx={{
+                    borderRadius: 2,
+                    mb: 1,
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.05)"
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <Avatar 
+                      src={user.avatar} 
+                      sx={{ 
+                        width: 28, 
+                        height: 28,
+                        border: "2px solid rgba(99, 102, 241, 0.2)"
+                      }} 
+                    />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="My Profile" 
+                    secondary={user.username}
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                    secondaryTypographyProps={{ fontSize: "0.8rem" }}
+                  />
+                </ListItemButton>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.7 }}
+              >
+                <ListItemButton 
+                  onClick={handleLogout}
+                  sx={{
+                    borderRadius: 2,
+                    color: "error.main",
+                    "&:hover": {
+                      backgroundColor: "rgba(244, 67, 54, 0.1)"
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ 
+                    color: "error.main",
+                    minWidth: 40
+                  }}>
+                    <LogoutIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout" />
+                </ListItemButton>
+              </motion.div>
             </>
           )}
         </List>
@@ -255,9 +554,22 @@ export default function ResponsiveDrawer({ children }) {
               duration: t.transitions.duration.leavingScreen,
             }),
           ml: open ? `${drawerWidth}px` : 0,
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%)"
         }}
       >
-        <Container maxWidth="lg">{children}</Container>
+        <Container maxWidth="xl" sx={{ py: 2 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </Container>
       </Box>
     </Box>
   );
