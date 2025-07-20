@@ -22,6 +22,7 @@ import {
   Tooltip,
   Fade,
   Button,
+
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -40,6 +41,10 @@ import {
   Settings as SettingsIcon,
   VideoLibrary as VideoLibraryIcon,
   Login as LoginIcon,
+  Notifications as NotificationsIcon,
+  Settings as SettingsIcon,
+  VideoLibrary as VideoLibraryIcon,
+
 } from "@mui/icons-material";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -245,6 +250,10 @@ export default function ResponsiveDrawer({ children }) {
                 <IconButton
                   component={RouterLink}
                   to="/"
+
+              <Tooltip title="Notifications">
+                <IconButton
+
                   sx={{
                     backgroundColor: "rgba(99, 102, 241, 0.1)",
                     color: "primary.main",
@@ -253,12 +262,22 @@ export default function ResponsiveDrawer({ children }) {
                     }
                   }}
                 >
+
                   <HomeIcon />
+
+                  <Badge badgeContent={3} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+
                 </IconButton>
               </Tooltip>
             </motion.div>
 
+
             {user ? (
+
+            {user && (
+
               <>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Tooltip title="Premium">
@@ -583,6 +602,7 @@ export default function ResponsiveDrawer({ children }) {
                   <ListItemText primary="Logout" />
                 </ListItemButton>
               </motion.div>
+
             </>
           )}
 
