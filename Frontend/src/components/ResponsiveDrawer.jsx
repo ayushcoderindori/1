@@ -21,6 +21,7 @@ import {
   Badge,
   Tooltip,
   Fade,
+  Button,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -36,9 +37,9 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   Star as StarIcon,
-  Notifications as NotificationsIcon,
   Settings as SettingsIcon,
   VideoLibrary as VideoLibraryIcon,
+  Login as LoginIcon,
 } from "@mui/icons-material";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -240,8 +241,10 @@ export default function ResponsiveDrawer({ children }) {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Tooltip title="Notifications">
+              <Tooltip title="Home">
                 <IconButton
+                  component={RouterLink}
+                  to="/"
                   sx={{
                     backgroundColor: "rgba(99, 102, 241, 0.1)",
                     color: "primary.main",
@@ -250,14 +253,12 @@ export default function ResponsiveDrawer({ children }) {
                     }
                   }}
                 >
-                  <Badge badgeContent={3} color="error">
-                    <NotificationsIcon />
-                  </Badge>
+                  <HomeIcon />
                 </IconButton>
               </Tooltip>
             </motion.div>
 
-            {user && (
+            {user ? (
               <>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Tooltip title="Premium">
@@ -368,6 +369,51 @@ export default function ResponsiveDrawer({ children }) {
                     Logout
                   </MenuItem>
                 </Menu>
+              </>
+            ) : (
+              <>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    component={RouterLink}
+                    to="/login"
+                    variant="outlined"
+                    startIcon={<LoginIcon />}
+                    sx={{
+                      borderRadius: 2,
+                      px: 2,
+                      py: 1,
+                      fontWeight: 600,
+                      borderColor: "primary.main",
+                      color: "primary.main",
+                      "&:hover": {
+                        backgroundColor: "rgba(99, 102, 241, 0.1)",
+                        borderColor: "primary.dark"
+                      }
+                    }}
+                  >
+                    Login
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    component={RouterLink}
+                    to="/register"
+                    variant="contained"
+                    sx={{
+                      borderRadius: 2,
+                      px: 2,
+                      py: 1,
+                      fontWeight: 600,
+                      background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)",
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)"
+                      }
+                    }}
+                  >
+                    Register
+                  </Button>
+                </motion.div>
               </>
             )}
           </Box>
@@ -535,6 +581,61 @@ export default function ResponsiveDrawer({ children }) {
                     <LogoutIcon />
                   </ListItemIcon>
                   <ListItemText primary="Logout" />
+                </ListItemButton>
+              </motion.div>
+            </>
+          )}
+
+          {!user && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <ListItemButton
+                  component={RouterLink}
+                  to="/login"
+                  sx={{
+                    borderRadius: 2,
+                    mb: 1,
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.05)"
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <LoginIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Login" 
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                  />
+                </ListItemButton>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.7 }}
+              >
+                <ListItemButton
+                  component={RouterLink}
+                  to="/register"
+                  sx={{
+                    borderRadius: 2,
+                    "&:hover": {
+                      backgroundColor: "rgba(99, 102, 241, 0.05)"
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <PersonIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Register" 
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                  />
                 </ListItemButton>
               </motion.div>
             </>
