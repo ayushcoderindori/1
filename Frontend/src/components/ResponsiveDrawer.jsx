@@ -101,11 +101,17 @@ export default function ResponsiveDrawer({ children }) {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.leavingScreen,
             }),
-          width: `calc(100% - ${open ? drawerWidth : 0}px)`,
-          ml: open ? `${drawerWidth}px` : 0,
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%)",
+          width: { sm: `calc(100% - ${open ? drawerWidth : 0}px)`, xs: "100%" },
+          ml: { sm: open ? `${drawerWidth}px` : 0, xs: 0 },
+          background: (theme) => 
+            theme.palette.mode === 'light'
+              ? "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)"
+              : "linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)",
           backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
+          borderBottom: (theme) => 
+            `1px solid ${theme.palette.mode === 'light' 
+              ? 'rgba(255, 255, 255, 0.2)' 
+              : 'rgba(51, 65, 85, 0.3)'}`,
           color: "text.primary",
         }}
       >
@@ -165,14 +171,26 @@ export default function ResponsiveDrawer({ children }) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backgroundColor: (theme) => 
+                  theme.palette.mode === 'light'
+                    ? "rgba(255, 255, 255, 0.8)"
+                    : "rgba(51, 65, 85, 0.8)",
                 borderRadius: 3,
                 px: 2,
                 py: 1,
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                border: (theme) => 
+                  `1px solid ${theme.palette.mode === 'light' 
+                    ? 'rgba(255, 255, 255, 0.3)' 
+                    : 'rgba(71, 85, 105, 0.3)'}`,
+                boxShadow: (theme) => 
+                  theme.palette.mode === 'light'
+                    ? "0 4px 12px rgba(0, 0, 0, 0.1)"
+                    : "0 4px 12px rgba(0, 0, 0, 0.3)",
                 "&:hover": {
-                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
+                  boxShadow: (theme) => 
+                    theme.palette.mode === 'light'
+                      ? "0 6px 20px rgba(0, 0, 0, 0.15)"
+                      : "0 6px 20px rgba(0, 0, 0, 0.4)",
                 },
               }}
             >
@@ -413,15 +431,20 @@ export default function ResponsiveDrawer({ children }) {
         variant="persistent"
         open={open}
         sx={{
+          display: { xs: "none", sm: "block" },
           width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%)",
+            bgcolor: "background.paper",
             backdropFilter: "blur(10px)",
-            borderRight: "1px solid rgba(255, 255, 255, 0.2)",
-            boxShadow: "4px 0 20px rgba(0, 0, 0, 0.1)",
+            borderRight: (theme) => 
+              `1px solid ${theme.palette.divider}`,
+            boxShadow: (theme) => 
+              theme.palette.mode === 'light'
+                ? "4px 0 20px rgba(0, 0, 0, 0.1)"
+                : "4px 0 20px rgba(0, 0, 0, 0.3)",
           },
         }}
       >
@@ -619,6 +642,69 @@ export default function ResponsiveDrawer({ children }) {
         </List>
       </Drawer>
 
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={open}
+        onClose={toggleDrawer}
+        sx={{
+          display: { xs: "block", sm: "none" },
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            bgcolor: "background.paper",
+          },
+        }}
+      >
+        <Toolbar sx={{ minHeight: 70 }} />
+        <Box sx={{ p: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Navigation
+          </Typography>
+        </Box>
+        <Divider sx={{ mx: 2 }} />
+        <List sx={{ px: 2, py: 1 }}>
+          {menuItems.map((item) => (
+            <ListItemButton
+              key={item.text}
+              component={RouterLink}
+              to={item.path}
+              selected={isActive(item.path)}
+              onClick={toggleDrawer}
+              sx={{
+                borderRadius: 2,
+                mb: 1,
+                backgroundColor: isActive(item.path) ? "rgba(99, 102, 241, 0.1)" : "transparent",
+                color: isActive(item.path) ? "primary.main" : "text.primary",
+                "&:hover": {
+                  backgroundColor: isActive(item.path)
+                    ? "rgba(99, 102, 241, 0.15)"
+                    : "rgba(99, 102, 241, 0.05)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{ fontWeight: 600 }}
+              />
+            </ListItemButton>
+          ))}
+        </List>
+      </Drawer>
+
       {/* Main Content */}
       <Box
         component="main"
@@ -630,23 +716,21 @@ export default function ResponsiveDrawer({ children }) {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.leavingScreen,
             }),
-          ml: open ? `${drawerWidth}px` : 0,
+          ml: { sm: open ? `${drawerWidth}px` : 0, xs: 0 },
           minHeight: "100vh",
-          background: "linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%)",
+          bgcolor: "background.default",
         }}
       >
-        <Container maxWidth="xl" sx={{ py: 2 }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </Container>
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </Box>
     </Box>
   );
